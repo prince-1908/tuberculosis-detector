@@ -72,20 +72,20 @@ export default function Home() {
 
   if (loadingModel) return (
     <div className='flex items-center justify-center h-screen flex-col gap-7'>
-      <p className="mb-4 text-center text-blue-700 text-xl font-semibold">Loading Model</p>
+      <p className="mb-4 text-center text-blue-700 text-7xl font-bold">Tuberculosis Detector</p>
       <div className="loader"></div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
+    <div className="min-h-screen bg-gray-100">
       <header className="bg-blue-900 text-white py-6 shadow-md">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold">Tuberculosis Detector</h1>
         </div>
       </header>
 
-      <main className="container mx-auto mt-10">
+      <main className="container mx-auto mt-10 px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           <div className="space-y-4">
             <input
@@ -94,7 +94,7 @@ export default function Home() {
               onChange={handleImageChange}
             />
             <button
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              className="w-full bg-blue-600 text-white py-2 rounded cursor-pointer hover:bg-blue-700"
               onClick={predict}
             >
               Predict
