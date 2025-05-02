@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import Image from 'next/image';
+import { supabase } from '@/lib/supabaseClient';
+import { Navbar } from '@/components/Navbar';
 
 const TARGET_CLASSES: { [key: string]: string } = {
   0: "Normal",
@@ -56,6 +58,19 @@ export default function Home() {
       .sort((a, b) => b.probability - a.probability);
 
     setPredictions(topPredictions);
+
+    if (topPredictions.length > 0) {
+      const { className, probability } = topPredictions[0];
+      const riskLevel = getRiskLevel(probability);
+      const { error } = await supabase.from('predictions').insert({
+        image_url: imageUrl,
+        class_label: className,
+        probability,
+        risk_level: riskLevel
+      });
+
+      if (error) console.error("Error saving to Supabase:", error.message);
+    }
   };
 
   const getRiskLevel = (probability: number) => {
@@ -79,11 +94,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-blue-900 text-white py-6 shadow-md">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold">Tuberculosis Detector</h1>
-        </div>
-      </header>
+
+      <Navbar />
 
       <main className="container mx-auto mt-10 px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
@@ -121,7 +133,7 @@ export default function Home() {
                   <div key={i}>
                     <p className="text-lg font-bold text-red-700">{p.className}</p>
                     <p className="mt-1">
-                      Probability: <span className="font-mono">{(p.probability*100).toFixed(5)} %</span>
+                      Probability: <span className="font-mono">{(p.probability * 100).toFixed(5)} %</span>
                     </p>
                     <p className={`mt-1 font-semibold ${getRiskColor(p.probability)}`}>
                       Risk Level: {getRiskLevel(p.probability)}
