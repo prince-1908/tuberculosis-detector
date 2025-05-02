@@ -17,6 +17,7 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState<string>('');
   const [predictions, setPredictions] = useState<{ className: string, probability: number }[]>([]);
   const imageRef = useRef<HTMLImageElement>(null);
+  const [patientName, setPatientName] = useState<string>('')
 
   useEffect(() => {
     const loadModel = async () => {
@@ -66,7 +67,8 @@ export default function Home() {
         image_url: imageUrl,
         class_label: className,
         probability,
-        risk_level: riskLevel
+        risk_level: riskLevel,
+        patient_name: patientName
       });
 
       if (error) console.error("Error saving to Supabase:", error.message);
@@ -100,6 +102,13 @@ export default function Home() {
       <main className="container mx-auto mt-10 px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           <div className="space-y-4">
+            <input
+              type="text"
+              onChange={(e) => setPatientName(e.target.value)}
+              value={patientName}
+              placeholder='Patient Name'
+              className='w-full border border-gray-300 rounded p-2'
+            />
             <input
               type="file"
               className="w-full border border-gray-300 rounded p-2"

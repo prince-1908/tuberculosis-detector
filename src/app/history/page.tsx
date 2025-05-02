@@ -12,6 +12,7 @@ type Prediction = {
     probability: number;
     risk_level: string;
     created_at: string;
+    patient_name: string;
 };
 
 export default function History() {
@@ -43,6 +44,7 @@ export default function History() {
                     <table className="min-w-full bg-white shadow-md rounded">
                         <thead>
                             <tr>
+                                <th className="p-3 border-b">Patient Name</th>
                                 <th className="p-3 border-b">Image</th>
                                 <th className="p-3 border-b">Result</th>
                                 <th className="p-3 border-b">Probability</th>
@@ -53,6 +55,7 @@ export default function History() {
                         <tbody>
                             {predictions.map((item) => (
                                 <tr key={item.id} className="text-center">
+                                    <td className="p-2 border-b">{item.patient_name}</td>
                                     <td className="p-2 border-b">
                                         <Image
                                             src={item.image_url}
