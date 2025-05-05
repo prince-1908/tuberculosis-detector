@@ -5,6 +5,7 @@ import * as tf from '@tensorflow/tfjs';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import { Navbar } from '@/components/Navbar';
+import { useSession } from 'next-auth/react'
 
 const TARGET_CLASSES: { [key: string]: string } = {
   0: "Normal",
@@ -18,6 +19,7 @@ export default function Home() {
   const [predictions, setPredictions] = useState<{ className: string, probability: number }[]>([]);
   const imageRef = useRef<HTMLImageElement>(null);
   const [patientName, setPatientName] = useState<string>('')
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const loadModel = async () => {
@@ -68,7 +70,8 @@ export default function Home() {
         class_label: className,
         probability,
         risk_level: riskLevel,
-        patient_name: patientName
+        patient_name: patientName,
+        user_id: session?.user?.email ?? ""
       });
 
       if (error) console.error("Error saving to Supabase:", error.message);
@@ -87,7 +90,7 @@ export default function Home() {
     return "text-green-600";
   };
 
-  if (loadingModel) return (
+  if (loadingModel || status === 'loading') return (
     <div className='flex items-center justify-center h-screen flex-col gap-7'>
       <p className="mb-4 text-center text-blue-700 text-7xl font-bold">Tuberculosis Detector</p>
       <div className="loader"></div>

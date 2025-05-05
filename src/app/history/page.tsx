@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Image from 'next/image';
 import { Navbar } from '@/components/Navbar';
+import { useSession } from 'next-auth/react';
 
 type Prediction = {
     id: string;
@@ -13,19 +14,28 @@ type Prediction = {
     risk_level: string;
     created_at: string;
     patient_name: string;
+    user_id: string;
 };
 
 export default function History() {
     const [predictions, setPredictions] = useState<Prediction[]>([]);
     const [loading, setLoading] = useState<boolean>(true)
+    const { data: session } = useSession();
 
     useEffect(() => {
-        const fetchPredictions = async () => {
-            const { data, error } = await supabase.from('predictions').select('*').order('created_at', { ascending: false });
-            if (!error) setPredictions(data || []);
-        };
-        fetchPredictions().finally(() => setLoading(false));
-    }, []);
+        if (session) {
+            const fetchPredictions = async () => {
+                const { data, error } = await supabase
+                    .from('predictions')
+                    .select('*')
+                    .eq('user_id', session?.user?.email)
+                    .order('created_at', { ascending: false });
+
+                if (!error) setPredictions(data || []);
+            };
+            fetchPredictions().finally(() => setLoading(false));
+        }
+    }, [session]);
 
     if (loading) return (
         <div className='flex items-center justify-center h-screen flex-col gap-7'>
